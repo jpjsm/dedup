@@ -80,11 +80,10 @@ def hydrate_file(path: Path, chunk_size=1024 * 64):
 
 def hydrate_tree(root: Path):
     root = Path(root)
-    print(f"Hydrating: {root}")
 
     for p in root.rglob("*"):
         if p.is_file() and is_offline(p):
             print(f"  -> Hydrating {p}")
             hydrate_file(p)
 
-    print("Hydration complete.")
+    print(f"[hydrate.hydrate_tree] Hydration complete: «{root}».")

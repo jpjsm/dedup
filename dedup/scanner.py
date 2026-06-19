@@ -58,9 +58,12 @@ scanning, file change detection, and metadata extraction.
 
 import os
 import stat
+
+from collections import defaultdict
 from pathlib import Path
+
 from .config import SCAN_ROOTS
-from .db import upsert_file
+from .db import upsert_file, get_conn
 
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".tiff", ".bmp", ".heic"}
 AUDIO_EXT = {".mp3", ".flac", ".wav", ".m4a", ".aac", ".ogg"}
@@ -81,6 +84,36 @@ def classify_type(path: Path) -> str:
     return "other"
 
 
+def summarize_scan(scan_roots, db_conn):
+    """
+    Produce a per-root summary of file categories after scanning.
+    """
+    summary = {root: defaultdict(int) for root in scan_roots}
+
+    cur = db_conn.execute("SELECT path, file_type FROM files")
+    for row in cur:
+        path = Path(row["path"])
+        filetype = row["file_type"] or "other"
+
+        # Find which scan root this file belongs to
+        for root in scan_roots:
+            if path.is_relative_to(root):
+                summary[root][filetype] += 1
+                summary[root]["total"] += 1
+                break
+
+    print("\nScan Summary\n============\n")
+    for root in scan_roots:
+        print(root)
+        counts = summary[root]
+        print(f"  Documents:   {counts.get('document', 0):>12,}")
+        print(f"  Pictures:    {counts.get('image', 0):>12,}")
+        print(f"  Videos:      {counts.get('video', 0):>12,}")
+        print(f"  Audio:       {counts.get('audio', 0):>12,}")
+        print(f"  Other:       {counts.get('other', 0):>12,}")
+        print(f"  Total:       {counts.get('total', 0):>12,}\n")
+
+
 def scan():
     for root in SCAN_ROOTS:
         for dirpath, dirnames, filenames in os.walk(root):
@@ -92,7 +125,7 @@ def scan():
                         continue
                     file_type = classify_type(p)
                     upsert_file(
-                        path=str(p),
+                        path=str(p).strip(),
                         size=st.st_size,
                         mtime=st.st_mtime,
                         ctime=st.st_ctime,
@@ -101,3 +134,6 @@ def scan():
                 except Exception as e:
                     # For Slice 1, we can log to stderr or a simple log file
                     print(f"[scan] error on {p}: {e}")
+
+    with get_conn() as conn:
+        summarize_scan(SCAN_ROOTS, conn)
