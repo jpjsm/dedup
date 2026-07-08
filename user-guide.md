@@ -132,10 +132,14 @@ This makes things faster and avoids missing files.
 
 **Multiple Windows accounts**:
 
-If you want to scan files from another user account, create a shared folder and use NTFS junctions:
+If you want to scan files from another user account, create a shared folder and use NTFS junctions and
+give propper acces to the user running the code to read the files:
 
 ```cmd
 mklink /J C:\SharedData\User2_OneDrive C:\Users\User2\OneDrive
+
+icacls "C:\Users\OtherUser\OneDrive" /grant ThisUser:(RX) /T
+
 ```
 
 Then point Dedup to the shared folder in .env.
