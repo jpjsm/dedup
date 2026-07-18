@@ -40,24 +40,30 @@ You’ll need:
 
 ### Example `.env` file
 
-```txt
-# --- Optional: database location ---
-DEDUP_DB=${workspaceFolder}\data\index.db
+```env
+# --- Path to your conda environment ---
+# Update the username and env name if needed
+CONDA_PREFIX=C:\Users\alterego\miniforge3\envs\dedup-py311
+
+# --- Ensure VS Code uses the correct Python interpreter ---
+PYTHON_EXECUTABLE=C:\Users\alterego\miniforge3\envs\dedup-py311\python.exe
+
+# --- Make your project importable (dedup/ folder) ---
+PYTHONPATH=${workspaceFolder}\dedup
+
+# --- Optional: database definitions ---
+DEDUP_DB_BACKEND=postgres
+DEDUP_DB_PG_URL=postgresql://dedup_usr:L6rvwemlBTMyJsNzVLKf@localhost:5432/dedup
+DEDUP_DB_SQLite_location=C:\DedupDb\sqlite\index.db
 
 # --- Optional: disk mount points (Windows style) ---
-DEDUP_SCAN_ROOT_1=C:\SharedData\juanpablo.jofre\pictures
-# DEDUP_SCAN_ROOT_2=C:\SharedData\juanpablo.jofre\videos
-# DEDUP_SCAN_ROOT_3=F:\Media
+DEDUP_SCAN_ROOT_1=C:\Users\alterego\OneDrive
+DEDUP_SCAN_ROOT_2=C:\shared\jpjofresm@hotmail.com
+#DEDUP_SCAN_ROOT_3=C:\Public
 
 # --- Optional: hash selection ---
+# --- defaults to SHA256 if blake is not available
 HASH_ALGO=blake3
-```
-
-You can add more folders:
-
-```txt
-DEDUP_SCAN_ROOT_4=D:\Photos
-DEDUP_SCAN_ROOT_5=E:\Backup
 ```
 
 ---

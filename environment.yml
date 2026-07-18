@@ -1,6 +1,7 @@
 name: dedup-py311
 channels:
   - conda-forge
+  - pytorch  
 dependencies:
   - python=3.11
   - pip
@@ -8,5 +9,9 @@ dependencies:
   - tqdm
   - rich
   - python-dotenv
+  - psycopg2
+  - faiss-cpu  
   - pip:
       - blake3
+      - click
+      - pathspec

@@ -1,0 +1,31 @@
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+.py[codz]
+
+# SQLite
+index.db-journal
+
+
+# --- OneDrive sync placeholders ---
+# These appear as invisible GUID files and cannot be opened
+.*[0-9A-Fa-f-]{36}
+
+# --- Hidden/system files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Git metadata ---
+.git/
+.gitignore
+
+# --- Windows metadata ---
+ehthumbs.db
+
+# executables and libraries
+.exe
+.dll 
+.lib 
