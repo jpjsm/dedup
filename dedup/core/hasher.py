@@ -2,6 +2,7 @@
 
 import hashlib
 from dataclasses import dataclass
+from typing import Optional
 
 from dedup.config.settings import (
     HASH_ALGO,
@@ -19,6 +20,10 @@ class HashResult:
     full_hash: str
     partial_hash: str
     algo: str
+    # --- NEW fields for extractors ---
+    phash: Optional[bytes] = None
+    orb_descriptor: Optional[bytes] = None
+    clip_embedding: Optional[bytes] = None
 
 
 class Hasher:

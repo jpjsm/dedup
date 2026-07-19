@@ -10,8 +10,12 @@ dependencies:
   - rich
   - python-dotenv
   - psycopg2
-  - faiss-cpu  
+  - faiss-cpu
+  - numpy 
+  - pillow  
   - pip:
       - blake3
       - click
       - pathspec
+      - imagehash
+      - opencv-python
