@@ -1,5 +1,13 @@
 # De-Dup
 
+**NOTE**:
+
+- This project is being archived!
+- After many lessons learnt, and so many restarts of the repo we are moving to a new project: `Simplify`
+- The last architectural change from 'file-path' centric to '(object-hash, file-path)' <-- '(object-hash, similarity-vectors)' forced us to re-build from zero rather than updating code.
+
+Follow us in `simplify`
+
 ## Goals
 
 - de-dup files and centralize in one place.
