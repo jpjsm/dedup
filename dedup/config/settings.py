@@ -268,42 +268,31 @@ EXCLUDE_SPEC = PathSpec.from_lines("gitwildmatch", EXCLUDE_PATTERNS)
 
 
 # --- Similirity search (FAISS) ---
-IMAGE_BINARY_DIM = os.getenv("IMAGE_BINARY_DIM", 64)
-IMAGE_FLOAT_DIM = os.getenv("IMAGE_FLOAT_DIM", 512)
+PHASH_BINARY_DIM = os.getenv("PHASH_BINARY_DIM", 64)
+ORB_BINARY_DIM = os.getenv("ORB_BINARY_DIM", 32)
+CLIP_BINARY_DIM = os.getenv("CLIP_BINARY_DIM", 512)
 
-AUDIO_BINARY_DIM = os.getenv("AUDIO_BINARY_DIM", 128)
-AUDIO_FLOAT_DIM = os.getenv("AUDIO_FLOAT_DIM", 256)
+# AUDIO_BINARY_DIM = os.getenv("AUDIO_BINARY_DIM", 128)
+# AUDIO_FLOAT_DIM = os.getenv("AUDIO_FLOAT_DIM", 256)
 
-VIDEO_BINARY_DIM = os.getenv("VIDEO_BINARY_DIM", 64)
-VIDEO_FLOAT_DIM = os.getenv("VIDEO_FLOAT_DIM", 512)
+# VIDEO_BINARY_DIM = os.getenv("VIDEO_BINARY_DIM", 64)
+# VIDEO_FLOAT_DIM = os.getenv("VIDEO_FLOAT_DIM", 512)
 
-DOCUMENT_FLOAT_DIM = os.getenv("DOCUMENT_FLOAT_DIM", 768)
+# DOCUMENT_FLOAT_DIM = os.getenv("DOCUMENT_FLOAT_DIM", 768)
 
 # --- Similarity indexes (FAISS) ---
-FAISS_IMAGE_BINARY_INDEX = os.getenv(
-    "FAISS_IMAGE_BINARY_INDEX", "./data/faiss/image_binary.index"
-)
-FAISS_IMAGE_FLOAT_INDEX = os.getenv(
-    "FAISS_IMAGE_FLOAT_INDEX", "./data/faiss/image_float.index"
-)
+FAISS_PHASH_INDEX = os.getenv("FAISS_PHASH_INDEX", "./data/faiss/phash.index")
+FAISS_ORB_INDEX = os.getenv("FAISS_ORB_INDEX", "./data/faiss/orb.index")
+FAISS_CLIP_INDEX = os.getenv("FAISS_CLIP_INDEX", "./data/faiss/clip.index")
 
-FAISS_AUDIO_BINARY_INDEX = os.getenv(
-    "FAISS_AUDIO_BINARY_INDEX", "./data/faiss/audio_binary.index"
-)
-FAISS_AUDIO_FLOAT_INDEX = os.getenv(
-    "FAISS_AUDIO_FLOAT_INDEX", "./data/faiss/audio_float.index"
-)
+# FAISS_AUDIO_INDEX = os.getenv(
+#     "FAISS_AUDIO_INDEX", "./data/faiss/audio_binary.index"
+# )
 
-FAISS_VIDEO_BINARY_INDEX = os.getenv(
-    "FAISS_VIDEO_BINARY_INDEX", "./data/faiss/video_binary.index"
-)
-FAISS_VIDEO_FLOAT_INDEX = os.getenv(
-    "FAISS_VIDEO_FLOAT_INDEX", "./data/faiss/video_float.index"
-)
+# FAISS_VIDEO_INDEX = os.getenv(
+#     "FAISS_VIDEO_INDEX", "./data/faiss/video_binary.index"
+# )
 
-FAISS_DOCUMENT_BINARY_INDEX = os.getenv(
-    "FAISS_DOCUMENT_BINARY_INDEX", "./data/faiss/document_binary.index"
-)
-FAISS_DOCUMENT_FLOAT_INDEX = os.getenv(
-    "FAISS_DOCUMENT_FLOAT_INDEX", "./data/faiss/document_float.index"
-)
+# FAISS_DOCUMENT_INDEX = os.getenv(
+#     "FAISS_DOCUMENT_INDEX", "./data/faiss/document_binary.index"
+# )

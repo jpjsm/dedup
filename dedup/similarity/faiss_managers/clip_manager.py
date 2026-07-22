@@ -1,13 +1,14 @@
 # similarity/faiss_managers/clip_manager.py
 
+import json
 import os
 import numpy as np
 import faiss
 import threading
 
 from dedup.config.settings import (
-    IMAGE_FLOAT_DIM,
-    FAISS_IMAGE_FLOAT_INDEX,
+    CLIP_BINARY_DIM,
+    FAISS_CLIP_INDEX,
 )
 
 
@@ -18,8 +19,8 @@ class CLIPIndexManager:
     """
 
     def __init__(self):
-        self.dim = int(IMAGE_FLOAT_DIM)
-        self.path = FAISS_IMAGE_FLOAT_INDEX
+        self.dim = int(CLIP_BINARY_DIM)
+        self.path = FAISS_CLIP_INDEX
         self.lock = threading.Lock()
         self.id_map = {}
 
@@ -32,11 +33,24 @@ class CLIPIndexManager:
             self.index = faiss.IndexFlatIP(self.dim)
 
     def load(self):
+        # Load FAISS index only if it exists
         if os.path.exists(self.path):
             self.index = faiss.read_index(self.path)
 
+            # Only load id_map if the index exists
+            map_path = self.path + ".map"
+            if os.path.exists(map_path):
+                with open(map_path, "r") as f:
+                    self.id_map = {int(k): v for k, v in json.load(f).items()}
+        else:
+            # If index doesn't exist, start fresh
+            self._init_index()
+            self.id_map = {}
+
     def save(self):
         faiss.write_index(self.index, self.path)
+        with open(self.path + ".map", "w") as f:
+            json.dump(self.id_map, f)
 
     def rebuild(self, db):
         self.index = faiss.IndexFlatIP(self.dim)

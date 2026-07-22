@@ -15,9 +15,9 @@ from dedup.db.sqlite import SQLiteDB
 from dedup.similarity.multimodal_similarity_engine import (
     MultimodalSimilarityEngine as engine,
 )
-from similarity.extractors.phash_extractor import extract_phash
-from similarity.extractors.orb_extractor import extract_orb_descriptor
-from similarity.extractors.clip_extractor import extract_clip_embedding
+from dedup.similarity.extractors.phash_extractor import extract_phash
+from dedup.similarity.extractors.orb_extractor import extract_orb_descriptor
+from dedup.similarity.extractors.clip_extractor import extract_clip_embedding
 
 
 def get_db():
@@ -139,7 +139,7 @@ def run_parallel_ingestion(max_workers: int = 8):
 
         print(f"[parallel_ingest] Completed. Total files ingested: {processed}")
 
-    # FAISS indexing thread (optional, if you want to batch index after ingestion)
+    # FAISS indexing thread
     def faiss_worker():
         while True:
             item = faiss_queue.get()

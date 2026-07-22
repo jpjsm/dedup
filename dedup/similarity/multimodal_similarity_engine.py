@@ -1,8 +1,8 @@
 # dedup/similarity/multimodal_similarity_engine.py
 
-from similarity.faiss_managers.phash_manager import PHashIndexManager
-from similarity.faiss_managers.orb_manager import ORBIndexManager
-from similarity.faiss_managers.clip_manager import CLIPIndexManager
+from dedup.similarity.faiss_managers.phash_manager import PHashIndexManager
+from dedup.similarity.faiss_managers.orb_manager import ORBIndexManager
+from dedup.similarity.faiss_managers.clip_manager import CLIPIndexManager
 
 
 class MultimodalSimilarityEngine:

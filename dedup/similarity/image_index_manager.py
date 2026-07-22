@@ -4,12 +4,7 @@ import os
 import faiss
 import numpy as np
 
-from dedup.config.settings import (
-    FAISS_IMAGE_BINARY_INDEX,
-    FAISS_IMAGE_FLOAT_INDEX,
-    IMAGE_BINARY_DIM,
-    IMAGE_FLOAT_DIM,
-)
+from dedup.config.settings import PHASH_BINARY_DIM, ORB_BINARY_DIM, CLIP_BINARY_DIM
 
 
 class ImageIndexManager:
@@ -62,7 +57,7 @@ class ImageIndexManager:
         """
         self.binary = self._load_binary(
             FAISS_IMAGE_BINARY_INDEX,
-            int(IMAGE_BINARY_DIM),
+            int(PHASH_BINARY_DIM),
         )
         self.float = self._load_float(
             FAISS_IMAGE_FLOAT_INDEX,
@@ -88,7 +83,7 @@ class ImageIndexManager:
         """
         rows = db.get_all_image_vectors()
 
-        self.binary = faiss.IndexBinaryFlat(IMAGE_BINARY_DIM)
+        self.binary = faiss.IndexBinaryFlat(PHASH_BINARY_DIM)
         self.float = faiss.IndexFlatIP(IMAGE_FLOAT_DIM)
 
         for file_id, phash_blob, emb_blob in rows:

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS files (
     ------------------------------------------------------------
     -- 1. Perceptual Hash (pHash)
     ------------------------------------------------------------
-    phash BIT(64),                 -- 64-bit perceptual hash
+    phash BYTEA,                 -- 64-bit perceptual hash
     phash_faiss_index BIGINT,      -- FAISS binary index position
 
     ------------------------------------------------------------
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS files (
     ------------------------------------------------------------
     -- 3. CLIP Embedding (semantic vector)
     ------------------------------------------------------------
-    clip_embedding VECTOR(512),    -- 512-dim float32 embedding
+    clip_embedding BYTEA,    -- 512-dim float32 embedding
     clip_faiss_index BIGINT,       -- FAISS float index position
 
     ------------------------------------------------------------

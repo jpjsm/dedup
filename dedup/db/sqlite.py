@@ -8,18 +8,17 @@ class SQLiteDB(DedupDB):
         super().__init__(loader)
         self.conn = sqlite3.connect(path)
 
+    def execute(self, query_name, *params):
+        sql = self.loader.load(query_name)
+        cur = self.conn.cursor()
+        cur.execute(sql, params)
+        self.conn.commit()
 
-def execute(self, query_name, *params):
-    sql = self.loader.load(query_name)
-    cur = self.conn.cursor()
-    cur.execute(sql, params)
-    self.conn.commit()
+        # Return lastrowid ONLY for INSERT statements
+        if sql.strip().lower().startswith("insert"):
+            return cur.lastrowid
 
-    # Return lastrowid ONLY for INSERT statements
-    if sql.strip().lower().startswith("insert"):
-        return cur.lastrowid
-
-    return None
+        return None
 
     def query(self, query_name, *params):
         sql = self.loader.load(query_name)
