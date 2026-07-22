@@ -10,4 +10,5 @@ VALUES (
     %s, %s, %s,
     %s, %s, %s
 )
-ON CONFLICT (path) DO NOTHING;
+ON CONFLICT (path) DO NOTHING
+returning id;

@@ -68,6 +68,7 @@ def run_parallel_ingestion(max_workers: int = 8):
 
     scan_queue: queue.Queue = queue.Queue(maxsize=1000)
     db_queue: queue.Queue = queue.Queue(maxsize=1000)
+    faiss_queue: queue.Queue = queue.Queue(maxsize=1000)
 
     scanner = Scanner(SCAN_ROOTS)
     hasher = Hasher()
@@ -126,29 +127,47 @@ def run_parallel_ingestion(max_workers: int = 8):
             if item is None:
                 break
             info, hashes = item
-            insert_record(db, info, hashes)
-            processed += 1
 
-        if info.object_type == "image":
+            file_id = insert_record(db, info, hashes)
+
+            if info.object_type == "image":
+                faiss_queue.put((file_id, info, hashes))
+
+            processed += 1
+            if processed % 1000 == 0:
+                print(f"[parallel_ingest] DB: {processed} files ingested...")
+
+        print(f"[parallel_ingest] Completed. Total files ingested: {processed}")
+
+    # FAISS indexing thread (optional, if you want to batch index after ingestion)
+    def faiss_worker():
+        while True:
+            item = faiss_queue.get()
+            if item is None:
+                break
+
+            file_id, info, hashes = item
+
+            # Skip non-image files
+            if info.object_type != "image":
+                continue
+
             # Convert raw bytes to numpy vectors
             phash_bits = np.frombuffer(hashes.phash, dtype=np.uint8)
             orb_vector = np.frombuffer(hashes.orb_descriptor, dtype=np.uint8)
             clip_vector = np.frombuffer(hashes.clip_embedding, dtype=np.float32)
 
-            # Skip zero vectors (corrupted or unreadable images)
+            # Skip zero vectors (corrupt or unreadable images)
             if not (phash_bits.any() or orb_vector.any() or clip_vector.any()):
-                pass  # do not index zero vectors
-            else:
-                engine.add_image(
-                    file_id=db.last_insert_id(),
-                    phash_bits=phash_bits,
-                    orb_vector=orb_vector,
-                    clip_vector=clip_vector,
-                )
-            if processed % 1000 == 0:
-                print(f"[parallel_ingest] DB: {processed} files ingested...")
+                continue
 
-        print(f"[parallel_ingest] Completed. Total files ingested: {processed}")
+            # Index in FAISS
+            engine.add_image(
+                file_id=file_id,
+                phash_bits=phash_bits,
+                orb_vector=orb_vector,
+                clip_vector=clip_vector,
+            )
 
     # Start scanner + DB writer
     threading.Thread(target=scan_worker, daemon=True).start()
