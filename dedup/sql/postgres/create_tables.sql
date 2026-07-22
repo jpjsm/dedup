@@ -1,3 +1,8 @@
+------------------------------------------------------------
+-- 1. FILES TABLE
+-- One row per file on disk
+-- No similarity vectors stored here
+------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS files (
     id BIGSERIAL PRIMARY KEY,
 
@@ -15,41 +20,71 @@ CREATE TABLE IF NOT EXISTS files (
         object_type IN ('image', 'audio', 'video', 'document', 'other')
     ),
 
-    -- Hashing
+    -- Content hash (SHA256, BLAKE3, etc.)
     hash TEXT NOT NULL,
+
+    -- File size
     size BIGINT NOT NULL,
 
-    ------------------------------------------------------------
-    -- 1. Perceptual Hash (pHash)
-    ------------------------------------------------------------
-    phash BYTEA,                 -- 64-bit perceptual hash
-    phash_faiss_index BIGINT,      -- FAISS binary index position
-
-    ------------------------------------------------------------
-    -- 2. ORB Descriptor (binary feature vector)
-    ------------------------------------------------------------
-    orb_descriptor BYTEA,          -- 32-byte ORB mean descriptor
-    orb_faiss_index BIGINT,        -- FAISS binary index position
-
-    ------------------------------------------------------------
-    -- 3. CLIP Embedding (semantic vector)
-    ------------------------------------------------------------
-    clip_embedding BYTEA,    -- 512-dim float32 embedding
-    clip_faiss_index BIGINT,       -- FAISS float index position
-
-    ------------------------------------------------------------
-    -- Timestamps (with timezone)
-    ------------------------------------------------------------
+    -- Timestamps
     created_at TIMESTAMPTZ DEFAULT NOW(),
     modified_at TIMESTAMPTZ,
-    scanned_at TIMESTAMPTZ DEFAULT NOW()
+    scanned_at TIMESTAMPTZ DEFAULT NOW(),
+
+    -- FK to similarity table
+    FOREIGN KEY (hash) REFERENCES similarity(content_hash)
 );
 
 CREATE INDEX IF NOT EXISTS idx_files_hash ON files (hash);
 CREATE INDEX IF NOT EXISTS idx_files_object_type ON files (object_type);
 CREATE INDEX IF NOT EXISTS idx_files_parent_folder ON files (parent_folder);
 
--- Optional: speed up similarity lookups
-CREATE INDEX IF NOT EXISTS idx_files_phash_faiss ON files (phash_faiss_index);
-CREATE INDEX IF NOT EXISTS idx_files_orb_faiss ON files (orb_faiss_index);
-CREATE INDEX IF NOT EXISTS idx_files_clip_faiss ON files (clip_faiss_index);
+
+
+------------------------------------------------------------
+-- 2. SIMILARITY TABLE
+-- One row per unique content_hash
+-- Stores multimodal vectors
+------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS similarity (
+    content_hash TEXT PRIMARY KEY,      -- SHA256 or BLAKE3
+
+    --------------------------------------------------------
+    -- 1. Perceptual Hash (pHash)
+    --------------------------------------------------------
+    phash BYTEA,                        -- 64-bit or 128-bit pHash
+
+    --------------------------------------------------------
+    -- 2. ORB Descriptor (binary feature vector)
+    --------------------------------------------------------
+    orb_descriptor BYTEA,               -- flattened ORB descriptor
+
+    --------------------------------------------------------
+    -- 3. CLIP Embedding (semantic vector)
+    --------------------------------------------------------
+    clip_embedding BYTEA,               -- float32 array
+
+    --------------------------------------------------------
+    -- Timestamps
+    --------------------------------------------------------
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
+
+------------------------------------------------------------
+-- 3. OPTIONAL: FAISS INDEX METADATA TABLE
+-- Stores FAISS index positions for each modality
+-- Useful but not required
+------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS similarity_faiss (
+    content_hash TEXT PRIMARY KEY REFERENCES similarity(content_hash),
+
+    phash_index BIGINT,
+    orb_index BIGINT,
+    clip_index BIGINT
+);
+
+CREATE INDEX IF NOT EXISTS idx_similarity_faiss_phash ON similarity_faiss (phash_index);
+CREATE INDEX IF NOT EXISTS idx_similarity_faiss_orb ON similarity_faiss (orb_index);
+CREATE INDEX IF NOT EXISTS idx_similarity_faiss_clip ON similarity_faiss (clip_index);
